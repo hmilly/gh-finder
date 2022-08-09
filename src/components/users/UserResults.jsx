@@ -1,33 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useContext } from "react";
+import Spinner from "../layout/Spinner";
+import UserItem from "./UserItem";
+import GithubContext from "../../context/github/GithubContext";
 
 const UserResults = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { users, fetchUsers, loading } = useContext(GithubContext);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    const response = await fetch(`${process.env.REACT_APP_GITHUB_URL}/users`, {
-      headers: { Authorization: `token ${process.env.REACT_APP_GITHUB_TOKEN}` },
-    });
-    const data = await response.json();
-
-    setUsers(data);
-    setLoading(false);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [users]);
 
   if (!loading) {
     return (
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2">
-        {users.map((user, i) => (
-          <h3 key={i}>{user.login}</h3>
+        {users.map((user) => (
+          <UserItem key={user.id} user={user} />
         ))}
       </div>
     );
   } else {
-    return <h3>loading...</h3>
+    return <Spinner />;
   }
 };
 
