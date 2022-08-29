@@ -11,7 +11,7 @@ const User = () => {
 
   useEffect(() => {
     getUser(params.login);
-    getRepos(params.login)
+    getRepos(params.login);
   }, []);
 
   if (loading) {
@@ -138,7 +138,7 @@ const User = () => {
               </div>
             </div>
           </div>
-          <RepoList repos={repos}/>
+          {<RepoList repos={repos} />}
         </div>
       </>
     );

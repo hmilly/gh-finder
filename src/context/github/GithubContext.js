@@ -1,5 +1,6 @@
 import { data } from "autoprefixer";
 import { createContext, useReducer } from "react";
+import { createRenderer } from "react-dom/test-utils";
 import githubReducer from "./GithubReducer";
 
 const GithubContext = createContext();
@@ -52,10 +53,15 @@ export const GithubProvider = ({ children }) => {
   const getRepos = async (login) => {
     setLoading();
 
-    const response = await fetch(`${GITHUB_URL}/users/${login}/repos`, {
-      headers: { Authorization: `token ${GITHUB_TOKEN}` },
-    });
-    const { data } = await response.json();
+    const params = new URLSearchParams({ sort: "created", per_page: 8 });
+
+    const response = await fetch(
+      `${GITHUB_URL}/users/${login}/repos?${params}`,
+      {
+        headers: { Authorization: `token ${GITHUB_TOKEN}` },
+      }
+    );
+    const data = await response.json();
 
     dispatch({
       type: "GET_REPOS",
