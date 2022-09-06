@@ -4,15 +4,21 @@ import { FaCodepen, FaStore, FaUserFriends, FaUsers } from "react-icons/fa";
 import Spinner from "../components/layout/Spinner";
 import GithubContext from "../context/github/GithubContext";
 import RepoList from "../components/repos/RepoList";
+import { fetchUserData } from "../context/github/GithubActions";
 
 const User = () => {
-  const { getUser, user, loading, getRepos, repos } = useContext(GithubContext);
+  const { user, repos, loading, dispatch } = useContext(GithubContext);
   const params = useParams();
 
   useEffect(() => {
-    getUser(params.login);
-    getRepos(params.login);
-  }, []);
+    dispatch({ type: "SET_LOADING" });
+
+    const getUserData = async () => {
+      const userData = await fetchUserData(params.login);
+      dispatch({ type: "FETCH_USER_DATA", payload: userData });
+    };
+    getUserData();
+  }, [params.login, dispatch]);
 
   if (loading) {
     return <Spinner />;
@@ -30,10 +36,7 @@ const User = () => {
             <div className="custom-card-image mb-6 md:mb-0">
               <div className="rounded-lg shadow-xl card image-full">
                 <figure>
-                  <img
-                    src={user.avatar_url}
-                    alt={`${user.login}'s avatar image`}
-                  />
+                  <img src={user.avatar_url} alt={`${user.login}'s avatar`} />
                 </figure>
                 <div className="card-body justify-end">
                   <h2 className="card-title mb-0">{user.name}</h2>
